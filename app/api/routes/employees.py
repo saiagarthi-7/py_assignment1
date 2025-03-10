@@ -2,6 +2,7 @@ from db.schemas import Employee
 from services.employee_service import employees_db,create_emp_details,update_emp_details,del_emp_details,get_emp_details
 from fastapi import APIRouter,HTTPException
 
+
 router = APIRouter(prefix="/product", tags=['product'])
 
 

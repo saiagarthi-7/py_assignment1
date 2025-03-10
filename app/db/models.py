@@ -24,7 +24,7 @@ class Project(Base):
 class Salary(Base):
     __tablename__ = 'salaries'
     id : Mapped[int] = mapped_column(primary_key = True, index = True)
-    employee_id = Mapped[int] = mapped_column(ForeignKey('employees.id'))
+    emp_id = Mapped[int] = mapped_column(ForeignKey('employees.id'))
     amount = Mapped[int] = mapped_column(nullable = False)
     month = Mapped[str] = mapped_column(nullable = False)
 

@@ -7,11 +7,10 @@ app=FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=['*'],
-    allow_credentials=True,
-    allow_methods=['*'],
-    allow_headers=['*']
-
+    allow_origins=['*'],    #allow which domains can access the fastapi
+    allow_credentials=True, #allow the domains based on the 
+    allow_methods=['*'],    #allow specific methods like get, put, post, delete
+    allow_headers=['*']   
 )
 
 app.include_router(employees.router)

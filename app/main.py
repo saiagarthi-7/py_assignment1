@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from api.routes import employees
+from api.routes import employees,projects
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 from jose import jwt
@@ -7,6 +7,8 @@ from jose import jwt
 app=FastAPI()
 
 app.include_router(employees.router)
+app.include_router(projects.router)
+
 
 
 app.add_middleware(
@@ -37,6 +39,7 @@ def decode_token(token: str):
 def decode_token_api(token : str):
     data = decode_token(token = token)
     return data
+
 
 if "__main__" == __name__:
     uvicorn.run(app,port=8090,reload=True)

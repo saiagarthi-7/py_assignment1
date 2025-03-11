@@ -7,6 +7,6 @@ load_dotenv()
 DB = os.getenv('SQLALCHEMY_DATABASE_URL', "postgresql://postgres:root@localhost/employee_db")
 
 engine = create_engine(DB)
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+SessionLocal = sessionmaker(autocommit=False, bind=engine)
 
 Base = declarative_base()

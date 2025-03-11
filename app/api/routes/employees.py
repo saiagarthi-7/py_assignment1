@@ -1,32 +1,35 @@
 from db.schemas import Employee
-from services.employee_service import employees_db,create_emp_details,update_emp_details,del_emp_details,get_emp_details
-from fastapi import APIRouter,HTTPException
+from services.employee_service import employees_db, create_emp_details, update_emp_details, del_emp_details, get_emp_details
+from fastapi import APIRouter, HTTPException
 
+router = APIRouter(prefix="/employees", tags=['employees'])
 
-router = APIRouter(prefix="/product", tags=['product'])
-
-
-@router.get('/')
-def get_all():
+@router.get("/")
+async def get_employees():
     return employees_db
 
-@router.get("/employee/{employee_id}")
-def get_employee(emp_id:int):
-        return get_emp_details(emp_id)   
+@router.get("/{employee_id}")
+async def get_employee(employee_id: int):
+    employee = get_emp_details(employee_id)
+    if employee is None:
+        raise HTTPException(status_code=404, detail="Employee not found")
+    return employee
 
-@router.post('/employee')
-def emp_details(emp:Employee):
-    try:
-        return create_emp_details(emp)
-    except HTTPException as e:
-        raise e
-    except Exception as ex:
-         raise HTTPException(500, "unknown error")
+@router.post("/")
+async def create_employee(employee: Employee):
+    new_employee = create_emp_details(employee)
+    return new_employee
 
-@router.put('/employee')
-def updated_emp(emp_id:int,name:str):
-    return update_emp_details(emp_id,name)
+@router.put("/update/{employee_id}")
+async def update_employee(employee_id: int, employee: Employee):
+    updated_employee = update_emp_details(employee_id, employee)
+    if updated_employee is None:
+        raise HTTPException(status_code=404, detail="Employee not found")
+    return updated_employee
 
-@router.delete('/employee/{emp_id}')
-def delete_emp(emp_id:int):
-    return del_emp_details(emp_id)
+@router.delete("/delete/{employee_id}")
+async def delete_employee(employee_id: int):
+    deleted_employee = del_emp_details(employee_id)
+    if deleted_employee is None:
+        raise HTTPException(status_code=404, detail="Employee not found")
+    return deleted_employee

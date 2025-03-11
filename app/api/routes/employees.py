@@ -1,35 +1,23 @@
+from fastapi import Depends, APIRouter
+from sqlalchemy.orm import Session
+from db.database import get_db
+from services.employee_service import get_emp_details, create_emp_details, update_emp_details, del_emp_details
 from db.schemas import Employee
-from services.employee_service import employees_db, create_emp_details, update_emp_details, del_emp_details, get_emp_details
-from fastapi import APIRouter, HTTPException
 
-router = APIRouter(prefix="/employees", tags=['employees'])
-
-@router.get("/")
-async def get_employees():
-    return employees_db
+router = APIRouter(prefix="/employees", tags=["employees"])
 
 @router.get("/{employee_id}")
-async def get_employee(employee_id: int):
-    employee = get_emp_details(employee_id)
-    if employee is None:
-        raise HTTPException(status_code=404, detail="Employee not found")
-    return employee
+async def get_employee(employee_id: int, db: Session = Depends(get_db)):
+    return get_emp_details(employee_id, db)
 
-@router.post("/")
-async def create_employee(employee: Employee):
-    new_employee = create_emp_details(employee)
-    return new_employee
+@router.post("/create")
+async def create_employee(employee: Employee, db: Session = Depends(get_db)):
+    return create_emp_details(employee, db)
 
 @router.put("/update/{employee_id}")
-async def update_employee(employee_id: int, employee: Employee):
-    updated_employee = update_emp_details(employee_id, employee)
-    if updated_employee is None:
-        raise HTTPException(status_code=404, detail="Employee not found")
-    return updated_employee
+async def update_employee(employee_id: int, employee: Employee, db: Session = Depends(get_db)):
+    return update_emp_details(employee_id, employee, db)
 
 @router.delete("/delete/{employee_id}")
-async def delete_employee(employee_id: int):
-    deleted_employee = del_emp_details(employee_id)
-    if deleted_employee is None:
-        raise HTTPException(status_code=404, detail="Employee not found")
-    return deleted_employee
+async def delete_employee(employee_id: int, db: Session = Depends(get_db)):
+    return del_emp_details(employee_id, db)

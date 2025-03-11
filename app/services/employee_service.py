@@ -1,38 +1,39 @@
 from fastapi import HTTPException
+from sqlalchemy.orm import Session
+from db import models, schemas
 
-employees_db = {
-    1: {"name": "sai", "email": "sai@aifa.com", "position": "Software Engineer", "salary": 75000},
-    2: {"name": "ram", "email": "ram@aifa.com", "position": "Manager", "salary": 90000},
-    3: {"name": "mohan", "email": "mohan@aifa.com", "position": "Data Scientist", "salary": 85000},
-}
-
-def get_emp_details(emp_id):
-    if emp_id in employees_db:
-        return employees_db[emp_id]
+def get_emp_details(emp_id: int, db: Session):
+    employee = db.query(models.Employee).filter(models.Employee.id == emp_id).first()
+    if employee:
+        return employee
     else:
-        raise HTTPException(status_code=404,detail='Employee ID not found')
+        raise HTTPException(status_code=404, detail='Employee ID not found')
 
-def create_emp_details(emp):
-    if emp.emp_id not in employees_db:
-        employees_db[emp.emp_id] ={}
-        employees_db[emp.emp_id]['name']=emp.name
-        employees_db[emp.emp_id]['email']=emp.email
-        employees_db[emp.emp_id]['position']=emp.position
-        employees_db[emp.emp_id]['salary']=emp.salary
-        return True
-    else:
-        raise HTTPException(status_code=404, detail='already existed')
-    
-def update_emp_details(emp_id,name):
-    if emp_id in employees_db:
-        employees_db[emp_id]['name']=name
-        return True
-    else:
-        raise HTTPException(status_code=404, detail='employee id not found')
+def create_emp_details(emp: schemas.EmployeeCreate, db: Session):
+    db_emp = models.Employee(**emp.dict())
+    db.add(db_emp)
+    db.commit()
+    db.refresh(db_emp)
+    return db_emp
 
-def del_emp_details(emp_id):
-    if emp_id in employees_db:
-        del employees_db[emp_id]
+def update_emp_details(emp_id: int, emp: schemas.Employeeupdate, db: Session):
+    employee = db.query(models.Employee).filter(models.Employee.id == emp_id).first()
+    if employee:
+        employee.name = emp.name
+        employee.email = emp.email
+        employee.position = emp.position
+        employee.salary = emp.salary
+        db.commit()
+        db.refresh(employee)
+        return employee
+    else:
+        raise HTTPException(status_code=404, detail='Employee ID not found')
+
+def del_emp_details(emp_id: int, db: Session):
+    employee = db.query(models.Employee).filter(models.Employee.id == emp_id).first()
+    if employee:
+        db.delete(employee)
+        db.commit()
         return {'successfully deleted'}
     else:
-        raise HTTPException(status_code=404, detail='employee id not found')
+        raise HTTPException(status_code=404, detail='Employee ID not found')

@@ -1,36 +1,28 @@
-from fastapi import APIRouter, HTTPException
-from typing import List
+from fastapi import Depends, APIRouter
+from db.database import get_db
+from sqlalchemy.orm import Session
+from services.project_service import get_proj_details, create_proj_details, update_proj_details, del_proj_details
 from db.schemas import Project
-from services.project_service import projects_db, create_proj_details, update_proj_details, del_proj_details, get_proj_details
 
-router = APIRouter(prefix="/projects", tags=['projects'])
+router = APIRouter(prefix="/projects", tags=["projects"])
 
-@router.get("/")
-async def get_projects():
-    return projects_db
 
 @router.get("/{project_id}")
-async def get_project(project_id: int):
-    project = get_proj_details(project_id)
-    if project is None:
-        raise HTTPException(status_code=404, detail="Project not found")
+async def get_project(project_id: int, db: Session = Depends(get_db)):
+    project = get_proj_details(project_id, db)
     return project
 
-@router.post("/")
-async def create_project(project: Project):
-    new_project = create_proj_details(project)
+@router.post("/create")
+async def create_project(project: Project, db: Session = Depends(get_db)):
+    new_project = create_proj_details(project, db)
     return new_project
 
-@router.put("/{project_id}")
-async def update_project(project_id: int, project: Project):
-    updated_project = update_proj_details(project_id, project)
-    if updated_project is None:
-        raise HTTPException(status_code=404, detail="Project not found")
+@router.put("/update/{project_id}")
+async def update_project(project_id: int, project: Project, db: Session = Depends(get_db)):
+    updated_project = update_proj_details(project_id, project, db)
     return updated_project
 
-@router.delete("/{project_id}")
-async def delete_project(project_id: int):
-    deleted_project = del_proj_details(project_id)
-    if deleted_project is None:
-        raise HTTPException(status_code=404, detail="Project not found")
+@router.delete("/delete/{project_id}")
+async def delete_project(project_id: int, db: Session = Depends(get_db)):
+    deleted_project = del_proj_details(project_id, db)
     return deleted_project

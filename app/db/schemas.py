@@ -1,7 +1,7 @@
 from pydantic import BaseModel, field_validator
 from typing import Optional
 
-class DepartmentSchema(BaseModel):
+class Department(BaseModel):
     id: Optional[int] = None  
     name: str
 
@@ -28,6 +28,12 @@ class Employee(BaseModel):
         if id < 0:
             raise ValueError('Department ID must be positive')
         return id
+    
+class EmployeeCreate(Employee):
+    pass
+
+class Employeeupdate(Employee):
+    pass
 
 class Project(BaseModel):
     id: Optional[int] = None
@@ -46,7 +52,7 @@ class Project(BaseModel):
             raise ValueError('Department ID must be positive')
         return id
 
-class SalarySchema(BaseModel):
+class Salary(BaseModel):
     id: Optional[int] = None
     employee_id: int
     amount: float

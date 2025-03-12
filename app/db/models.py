@@ -1,5 +1,5 @@
 from .database import Base
-from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy import Column, Integer, String, ForeignKey, Float
 
 
 class Department(Base):
@@ -9,13 +9,15 @@ class Department(Base):
 
 
 class Employee(Base):
-    __tablename__ = 'employees'
+    __tablename__ = "employees"
+
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, index=True, nullable=False)
+    age = Column(Integer, index=True)
     email = Column(String, index=True, nullable=False, unique=True)
-    position = Column(String, index=True, nullable=False)
-    salary = Column(Integer, index=True, nullable=False)
-    dept_id = Column(Integer, ForeignKey('departments.id'))
+    position = Column(String,index=True, nullable=False)
+    salary = Column(Float, index=True, nullable=False)
+    dept_id = Column(Integer, ForeignKey("departments.id"))
 
 
 class Project(Base):

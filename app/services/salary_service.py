@@ -16,7 +16,7 @@ def create_salary_details(salary: schemas.Salary, db: Session):
     db.refresh(db_salary)
     return db_salary
 
-def update_salary_details(emp_id: int, salary: schemas.Salary, db: Session):
+def update_salary_details(emp_id: int, salary: schemas.SalaryUpdate, db: Session):
     salary_record = db.query(models.Salary).filter(models.Salary.emp_id == emp_id).first()
     if salary_record:
         salary_record.amount = salary.amount

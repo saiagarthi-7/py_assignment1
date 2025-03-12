@@ -4,7 +4,7 @@ from sqlalchemy.orm import sessionmaker
 import os
 from dotenv import load_dotenv
 
-load_dotenv()
+load_dotenv() 
 
 DB = os.getenv('SQLALCHEMY_DATABASE_URL', "postgresql://postgres:root@localhost/employee_db")
 

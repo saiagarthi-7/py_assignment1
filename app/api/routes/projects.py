@@ -1,11 +1,15 @@
 from fastapi import Depends, APIRouter
 from db.database import get_db
 from sqlalchemy.orm import Session
-from services.project_service import get_proj_details, create_proj_details, update_proj_details, del_proj_details
+from services.project_service import get_all_projects, get_proj_details, create_proj_details, update_proj_details, del_proj_details
 from db.schemas import Project
 
 router = APIRouter(prefix="/projects", tags=["projects"])
 
+@router.get("/")
+async def get_projects(db: Session = Depends(get_db)):
+    projects = get_all_projects(db)
+    return projects
 
 @router.get("/{project_id}")
 async def get_project(project_id: int, db: Session = Depends(get_db)):

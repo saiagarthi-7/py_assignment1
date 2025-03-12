@@ -5,11 +5,6 @@ import uvicorn
 from db.database import engine
 from db import models
 from jose import jwt
-import logging
-
-# Initialize logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
 
 # Create the database tables
 models.Base.metadata.create_all(bind=engine)
@@ -42,12 +37,14 @@ def create_token_api(name: str):
         token = create_access_token(subject=name)
         return token
     except Exception as e:
-        logger.error(f"Error creating token: {e}")
         return {"error": "Internal Server Error"}
 
 def decode_token(token: str):
-    data = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-    return data
+    try:
+        data = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        return data
+    except Exception as e:
+        return {"error": "Internal Server Error"}
 
 @app.get('/decode-token')
 def decode_token_api(token: str):
@@ -55,7 +52,6 @@ def decode_token_api(token: str):
         data = decode_token(token=token)
         return data
     except Exception as e:
-        logger.error(f"Error decoding token: {e}")
         return {"error": "Internal Server Error"}
 
 if __name__ == "__main__":

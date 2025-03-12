@@ -2,13 +2,24 @@ from pydantic import BaseModel, field_validator
 from typing import Optional
 
 class Department(BaseModel):
-    id: Optional[int] = None  
+    id: int  
     name: str
 
-class Employee(BaseModel):
-    id: Optional[int] = None
+class DepartmentUpdate(Department):
     name: str
-    age: int
+
+    @field_validator('name')
+    def name_not_empty(cls, name):
+        if not name:
+            raise ValueError('Name cannot be empty')
+        return name
+
+class Employee(BaseModel):
+    name: str
+    age: int  
+    email: str
+    position: str
+    salary: int
     dept_id: int
 
     @field_validator('name')
@@ -32,7 +43,7 @@ class Employee(BaseModel):
 class EmployeeCreate(Employee):
     pass
 
-class Employeeupdate(Employee):
+class EmployeeUpdate(Employee):
     pass
 
 class Project(BaseModel):
@@ -68,3 +79,11 @@ class Salary(BaseModel):
         if id < 0:
             raise ValueError('Employee ID must be positive')
         return id
+class SalaryUpdate(BaseModel):
+    amount: float
+
+    @field_validator('amount')
+    def amount_positive(cls, salary):
+        if salary < 0:
+            raise ValueError('Salary must be greater than zero')
+        return salary

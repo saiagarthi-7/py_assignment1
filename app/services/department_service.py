@@ -2,6 +2,9 @@ from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from db import models, schemas
 
+def get_all_departments(db: Session):
+    return db.query(models.Department).all()
+
 def get_dept_details(dept_id: int, db: Session):
     department = db.query(models.Department).filter(models.Department.id == dept_id).first()
     if department:
@@ -16,7 +19,7 @@ def create_dept_details(dept: schemas.Department, db: Session):
     db.refresh(db_dept)
     return db_dept
 
-def update_dept_details(dept_id: int, dept: schemas.Department, db: Session):
+def update_dept_details(dept_id: int, dept: schemas.DepartmentUpdate, db: Session):
     department = db.query(models.Department).filter(models.Department.id == dept_id).first()
     if department:
         department.name = dept.name

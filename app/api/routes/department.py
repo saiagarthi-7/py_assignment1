@@ -1,10 +1,15 @@
 from fastapi import Depends, APIRouter
 from sqlalchemy.orm import Session
 from db.database import get_db
-from services.department_service import get_dept_details, create_dept_details, update_dept_details, del_dept_details
+from services.department_service import get_all_departments, get_dept_details, create_dept_details, update_dept_details, del_dept_details
 from db.schemas import Department
 
 router = APIRouter(prefix="/departments", tags=["departments"])
+
+@router.get("/")
+async def get_departments(db: Session = Depends(get_db)):
+    departments = get_all_departments(db)
+    return departments
 
 @router.get("/{department_id}")
 async def get_department(department_id: int, db: Session = Depends(get_db)):

@@ -15,6 +15,7 @@ class DepartmentUpdate(Department):
         return name
 
 class Employee(BaseModel):
+    id: int
     name: str
     age: int  
     email: str
@@ -64,8 +65,6 @@ class Project(BaseModel):
         return id
 
 class Salary(BaseModel):
-    id: Optional[int] = None
-    employee_id: int
     amount: float
 
     @field_validator('amount')
@@ -73,12 +72,6 @@ class Salary(BaseModel):
         if salary < 0:
             raise ValueError('Salary must be greater than zero')
         return salary
-
-    @field_validator('employee_id')
-    def employee_id_positive(cls, id):
-        if id < 0:
-            raise ValueError('Employee ID must be positive')
-        return id
 class SalaryUpdate(BaseModel):
     amount: float
 

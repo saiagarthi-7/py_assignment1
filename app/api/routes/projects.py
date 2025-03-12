@@ -11,6 +11,7 @@ async def get_projects(db: Session = Depends(get_db)):
     projects = get_all_projects(db)
     return projects
 
+
 @router.get("/{project_id}")
 async def get_project(project_id: int, db: Session = Depends(get_db)):
     project = get_proj_details(project_id, db)

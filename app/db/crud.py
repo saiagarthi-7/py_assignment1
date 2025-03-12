@@ -85,11 +85,11 @@ def delete_project(db: Session, proj_id: int):
 
 # --------------- SALARY ---------------
 def create_salary(db: Session, salary: schemas.Salary):
-    db_salary = models.Salary(**salary.dict())
-    db.add(db_salary)
+    db_salary = models.Employee(**salary.dict())
+    db.add(db_salary.salary)
     db.commit()
     db.refresh(db_salary)
-    return db_salary
+    return {'message':'salary created'}
 
 def get_salaries(db: Session):
     return db.query(models.Salary).all()

@@ -27,9 +27,7 @@ class Project(Base):
     dept_id = Column(Integer, ForeignKey('departments.id'))
 
 
-
 class Salary(Base):
     __tablename__ = 'salaries'
-    id = Column(Integer, primary_key=True, index=True)
-    emp_id = Column(Integer, ForeignKey('employees.id'))
-    amount = Column(Integer, nullable=False)
+    emp_id = Column(Integer, ForeignKey('employees.id'), primary_key=True)
+    amount = Column(Float)

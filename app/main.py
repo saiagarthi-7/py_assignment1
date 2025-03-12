@@ -31,18 +31,19 @@ def create_access_token(subject: str):
     token = jwt.encode({'data': subject}, SECRET_KEY, algorithm=ALGORITHM)
     return {'access_token': token}
 
+def decode_token(token: str):
+    try:
+        data = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        return data
+    except Exception as e:
+        return {"error": "Internal Server Error"}
+    
+
 @app.get('/create-token')
 def create_token_api(name: str):
     try:
         token = create_access_token(subject=name)
         return token
-    except Exception as e:
-        return {"error": "Internal Server Error"}
-
-def decode_token(token: str):
-    try:
-        data = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        return data
     except Exception as e:
         return {"error": "Internal Server Error"}
 

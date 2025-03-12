@@ -13,20 +13,38 @@ def get_proj_details(proj_id: int, db: Session):
         raise HTTPException(status_code=404, detail='Project ID not found')
 
 def create_proj_details(proj: schemas.Project, db: Session):
-    db_proj = models.Project(**proj.model_dump())
-    db.add(db_proj)
-    db.commit()
-    db.refresh(db_proj)
-    return db_proj
+    try:
+        # Check if the project ID already exists
+        existing_proj = db.query(models.Project).filter(models.Project.id == proj.id).first()
+        if existing_proj:
+            raise HTTPException(status_code=400, detail='Project ID already exists')
+        
+        # Check if the department ID exists
+        existing_dept = db.query(models.Department).filter(models.Department.id == proj.dept_id).first()
+        if not existing_dept:
+            raise HTTPException(status_code=404, detail='No such department found')
+        
+        db_proj = models.Project(**proj.model_dump())
+        db.add(db_proj)
+        db.commit()
+        db.refresh(db_proj)
+        return {'message':'project added successfully'}
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        raise HTTPException(status_code=500, detail='Internal Server Error')
 
 def update_proj_details(proj_id: int, proj: schemas.Project, db: Session):
     project = db.query(models.Project).filter(models.Project.id == proj_id).first()
     if project:
         project.name = proj.name
+        existing_dept = db.query(models.Department).filter(models.Department.id == proj.dept_id).first()
+        if not existing_dept:
+            raise HTTPException(status_code=404, detail='No such department found')
         project.dept_id = proj.dept_id
         db.commit()
         db.refresh(project)
-        return project
+        return {'message':'project details updated'}
     else:
         raise HTTPException(status_code=404, detail='Project ID not found')
 

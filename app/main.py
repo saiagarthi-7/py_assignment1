@@ -1,20 +1,22 @@
 from fastapi import FastAPI
-from api.routes import employees, projects, department, salary
+from api.routes import employees, projects, department, salary, authorize
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 from db.database import engine
 from db import models
 from jose import jwt
+from api.routes.security import create_access_token, decode_token
 
 # Create the database tables
 models.Base.metadata.create_all(bind=engine)
 
-app = FastAPI()
+app = FastAPI(title="Employee Management System")
 
 app.include_router(employees.router)
 app.include_router(projects.router)
 app.include_router(department.router)
 app.include_router(salary.router)
+app.include_router(authorize.router)
 
 app.add_middleware(
     CORSMiddleware,
@@ -24,28 +26,13 @@ app.add_middleware(
     allow_headers=['*']
 )
 
-SECRET_KEY = 'nmljhgfdsdfghu876543ewdfghj'
-ALGORITHM = 'HS256'
-
-def create_access_token(subject: str):
-    token = jwt.encode({'data': subject}, SECRET_KEY, algorithm=ALGORITHM)
-    return {'access_token': token}
-
-def decode_token(token: str):
-    try:
-        data = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        return data
-    except Exception as e:
-        return {"error": "Internal Server Error"}
-    
-
 @app.get('/create-token')
 def create_token_api(name: str):
     try:
         token = create_access_token(subject=name)
         return token
     except Exception as e:
-        return {"error": "Internal Server Error"}
+        return {"error": e}
 
 @app.get('/decode-token')
 def decode_token_api(token: str):
@@ -53,7 +40,7 @@ def decode_token_api(token: str):
         data = decode_token(token=token)
         return data
     except Exception as e:
-        return {"error": "Internal Server Error"}
+        return {"error": e}
 
 if __name__ == "__main__":
     uvicorn.run(app, port=8090, reload=True)

@@ -18,6 +18,6 @@ async def get_salary(employee_id: int, db: Session = Depends(get_db)):
 async def update_salary(employee_id: int, salary: Salary, db: Session = Depends(get_db)):
     return update_salary_details(employee_id, salary, db)
 
-@router.delete("/delete/{employee_id}")
-async def delete_salary(employee_id: int, db: Session = Depends(get_db)): #Depends(get_db) is dependency injection 
-    return del_salary_details(employee_id, db)
+# @router.delete("/delete/{employee_id}")
+# async def delete_salary(employee_id: int, db: Session = Depends(get_db)): #Depends(get_db) is dependency injection 
+    # return del_salary_details(employee_id, db)

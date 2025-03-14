@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from db import models, schemas
 
 def get_all_employees(db: Session):
-    return db.query(models.Employee).all()
+    return db.query(models.Employee).order_by(models.Employee.id).all()
 
 def get_emp_details(emp_id: int, db: Session):  #function to get emp details by id
     try:
@@ -12,6 +12,8 @@ def get_emp_details(emp_id: int, db: Session):  #function to get emp details by 
             return employee
         else:
             raise HTTPException(status_code=404, detail='Employee ID not found') #raise an HTTP 404 error if the employee is not found
+    except HTTPException as e:
+        raise e
     except Exception as e:
         raise HTTPException(status_code=500, detail='Internal Server Error')
 
@@ -24,7 +26,7 @@ def create_emp_details(emp: schemas.EmployeeCreate, db: Session):
         
          # Check if the department number exists
         existing_dept = db.query(models.Department).filter(models.Department.id == emp.id).first()
-        if not existing_dept:
+        if existing_dept:
             raise HTTPException(status_code=404, detail='No such department found')
         
         db_emp = models.Employee(**emp.model_dump())
@@ -43,8 +45,8 @@ def update_emp_details(emp_id: int, emp: schemas.EmployeeUpdate, db: Session):
         if not employee:
             raise HTTPException(status_code=404, detail='Employee ID not found')
         
-        #check if te departmet nmbr exists
-        existing_dept = db.query(models.Department).filter(models.Department.id == emp.id).first()
+        #check if the departmet nmbr exists
+        existing_dept = db.query(models.Department).filter(models.Department.id == emp.dept_id).first()
         if not existing_dept:
             raise HTTPException(status_code=404, detail='No such department found')
         
@@ -53,7 +55,7 @@ def update_emp_details(emp_id: int, emp: schemas.EmployeeUpdate, db: Session):
         employee.email = emp.email
         employee.position = emp.position
         employee.salary = emp.salary
-        employee.department_id = emp.department_id
+        employee.dept_id = emp.dept_id
         db.commit()
         return {'message': 'Employee Updated Successfully'}
     except HTTPException as e:

@@ -44,8 +44,13 @@ class Employee(BaseModel):
 class EmployeeCreate(Employee):
     pass
 
-class EmployeeUpdate(Employee):
-    pass
+class EmployeeUpdate(BaseModel):
+    name: str
+    age: int  
+    email: str
+    position: str
+    salary: int
+    dept_id: int
 
 class Project(BaseModel):
     id: Optional[int] = None
@@ -80,3 +85,14 @@ class SalaryUpdate(BaseModel):
         if salary < 0:
             raise ValueError('Salary must be greater than zero')
         return salary
+    
+class Tokens(BaseModel):
+    access_token: str
+    token_type: str
+
+class TokenData(BaseModel):
+    username: Optional[str] = None
+
+class EmployeeLogin(BaseModel):
+    username: str
+    password: str

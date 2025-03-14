@@ -1,6 +1,13 @@
 from sqlalchemy.orm import Session
-import models
-import schemas
+from fastapi import HTTPException, Depends, status
+from fastapi.security import OAuth2PasswordBearer
+from typing import Optional
+from db.database import get_db
+from api.routes.security import pass_verify, decode_token
+from db import models, schemas
+
+oauth= OAuth2PasswordBearer(tokenUrl="authorize/token")
+
 
 # -------------- DEPARTMENT ------------
 def create_department(db: Session, dept: schemas.Department):
@@ -40,10 +47,13 @@ def create_employee(db: Session, emp: schemas.EmployeeCreate):
 def get_employees(db: Session):
     return db.query(models.Employee).all()
 
+def get_emp_by_empname(db: Session, username: str):
+    return db.query(models.Employee).filter(models.Employee.name == username).first()
+
 def update_employee(db: Session, emp_id: int, emp: schemas.EmployeeCreate):
     db_emp = db.query(models.Employee).filter(models.Employee.id == emp_id).first()
     if db_emp:
-        for key, value in emp.dict().items():
+        for key, value in emp.model_dump().items():
             setattr(db_emp, key, value)
         db.commit()
         db.refresh(db_emp)
@@ -109,3 +119,32 @@ def delete_salary(db: Session, salary_id: int):
         db.delete(db_salary)
         db.commit()
     return db_salary
+
+
+# Authentication functions
+def authenticate_user(db: Session, username: str, password: str):
+    user = get_emp_by_empname(db, username)
+    if not user or not pass_verify(password, user.hashed_password):
+        return None
+    return user
+
+def get_current_employee(db: Session = Depends(get_db), token: str = Depends(oauth)):
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+
+    payload = decode_token(token)
+    if not payload:
+        raise credentials_exception
+
+    username: str = payload.get("sub")
+    if username is None:
+        raise credentials_exception
+
+    user = get_emp_by_empname(db, username)
+    if user is None:
+        raise credentials_exception
+
+    return user

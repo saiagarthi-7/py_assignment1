@@ -4,6 +4,7 @@ from db.database import get_db
 from services.employee_service import get_all_employees, get_emp_details, create_emp_details, update_emp_details, del_emp_details
 from db.schemas import EmployeeCreate, EmployeeUpdate, Employee
 
+
 router = APIRouter(prefix="/employees", tags=["employees"])
 
 @router.get("/")

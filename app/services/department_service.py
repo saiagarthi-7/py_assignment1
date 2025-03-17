@@ -16,12 +16,11 @@ def create_dept_details(dept: schemas.Department, db: Session):
     try:
         existing_dept = db.query(models.Department).filter(models.Department.id == dept.id).first()
         if existing_dept:
-            raise HTTPException(status_code=400, detail='Department already existed')
-        db_dept = models.Department(**dept.model_dump())
+            raise HTTPException(status_code=400, detail='Department ID already existed')
 
         existing_dept_name = db.query(models.Department).filter(models.Department.name == dept.name).first()
         if existing_dept_name:
-            raise HTTPException(status_code=404, detail='No two departments name will be same')
+            raise HTTPException(status_code=404, detail='department name already existed')
         db_dept = models.Department(**dept.model_dump())
         db.add(db_dept)
         db.commit()
@@ -35,7 +34,6 @@ def create_dept_details(dept: schemas.Department, db: Session):
 def update_dept_details(dept_id: int, dept: schemas.DepartmentUpdate, db: Session):
     department = db.query(models.Department).filter(models.Department.id == dept_id).first()
     if department:
-        department.id=dept.id
         department.name = dept.name
         db.commit()
         db.refresh(department)

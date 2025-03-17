@@ -6,11 +6,11 @@ from fastapi import HTTPException
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-def pass_verify(plain_password: str, hashed_password: str):
-    return pwd_context.verify(plain_password, hashed_password)
-
 def password_hash(password: str):
     return pwd_context.hash(password)
+
+def pass_verify(plain_password: str, hashed_password: str):
+    return pwd_context.verify(plain_password, hashed_password)
 
 def create_access_token(subject: str, expires_delta: timedelta = None):
     to_encode = {"sub": subject}
@@ -28,3 +28,4 @@ def decode_token(token: str):
         return data
     except JWTError as e:
         raise HTTPException(status_code=401, detail="Invalid token or token expired")
+

@@ -6,3 +6,5 @@ bycrypt
 python-dotenv
 python-jose
 python-multipart
+passlib
+pydantic

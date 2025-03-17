@@ -50,6 +50,10 @@ def get_employees(db: Session):
 def get_emp_by_empname(db: Session, username: str):
     return db.query(models.Employee).filter(models.Employee.name == username).first()
 
+
+def get_emp_by_email(db: Session, email: str):
+    return db.query(models.Employee).filter(models.Employee.email == email).first()
+
 def update_employee(db: Session, emp_id: int, emp: schemas.EmployeeCreate):
     db_emp = db.query(models.Employee).filter(models.Employee.id == emp_id).first()
     if db_emp:
@@ -122,11 +126,11 @@ def delete_salary(db: Session, salary_id: int):
 
 
 # Authentication functions
-def authenticate_user(db: Session, username: str, password: str):
-    user = get_emp_by_empname(db, username)
-    if not user or not pass_verify(password, user.hashed_password):
+def authenticate_employee(db: Session, email: str, password: str):
+    employee = get_emp_by_email(db, email)
+    if not employee or not pass_verify(password, employee.password):
         return None
-    return user
+    return employee
 
 def get_current_employee(db: Session = Depends(get_db), token: str = Depends(oauth)):
     credentials_exception = HTTPException(
@@ -139,12 +143,12 @@ def get_current_employee(db: Session = Depends(get_db), token: str = Depends(oau
     if not payload:
         raise credentials_exception
 
-    username: str = payload.get("sub")
-    if username is None:
+    email: str = payload.get("sub")
+    if email is None:
         raise credentials_exception
 
-    user = get_emp_by_empname(db, username)
-    if user is None:
+    employee = get_emp_by_empname(db, email)
+    if employee is None:
         raise credentials_exception
 
-    return user
+    return employee

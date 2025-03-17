@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 
 load_dotenv() 
 
-DB = os.getenv('SQLALCHEMY_DATABASE_URL', "postgresql://postgres:root@localhost/employee_db")
+DB = os.getenv('SQLALCHEMY_DATABASE_URL', "postgresql://postgres:root@localhost/new_office")
 
 engine = create_engine(DB)
 SessionLocal = sessionmaker(autocommit=False, bind=engine)

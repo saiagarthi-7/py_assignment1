@@ -24,6 +24,10 @@ def create_proj_details(proj: schemas.Project, db: Session):
         if not existing_dept:
             raise HTTPException(status_code=404, detail='No such department found')
         
+        existing_proj_name=db.query(models.Project).filter(models.Project.name==proj.name).first()
+        if existing_proj_name:
+            raise HTTPException(status_code=400, detail='project name already registered')
+        
         db_proj = models.Project(**proj.model_dump())
         db.add(db_proj)
         db.commit()

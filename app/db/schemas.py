@@ -5,7 +5,13 @@ class Department(BaseModel):
     id: int  
     name: str
 
-class DepartmentUpdate(Department):
+    @field_validator('name')
+    def name_not_empty(cls, name):
+        if not name:
+            raise ValueError('Name cannot be empty')
+        return name
+
+class DepartmentUpdate(BaseModel):
     name: str
 
     @field_validator('name')
@@ -19,6 +25,7 @@ class Employee(BaseModel):
     name: str
     age: int  
     email: str
+    hashed_password: str
     position: str
     salary: int
     dept_id: int
@@ -48,6 +55,7 @@ class EmployeeUpdate(BaseModel):
     name: str
     age: int  
     email: str
+    hashed_password:str
     position: str
     salary: int
     dept_id: int

@@ -25,9 +25,13 @@ def create_emp_details(emp: schemas.EmployeeCreate, db: Session):
             raise HTTPException(status_code=400, detail='Employee ID already exists')
         
          # Check if the department number exists
-        existing_dept = db.query(models.Department).filter(models.Department.id == emp.id).first()
-        if existing_dept:
+        existing_dept = db.query(models.Department).filter(models.Department.id == emp.dept_id).first()
+        if not existing_dept:
             raise HTTPException(status_code=404, detail='No such department found')
+
+        exist_email=db.query(models.Employee).filter(models.Employee.email == emp.email).first()#this var checks if same email exists 
+        if exist_email:                                                                         #if exists it do not enter another mail address
+            raise HTTPException(status_code=400, detail='email already existed please enter new emailID')
         
         db_emp = models.Employee(**emp.model_dump())
         db.add(db_emp)  # add new employee to db
